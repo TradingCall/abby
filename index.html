@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Untuk Kamu ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink: #ffb6c1;
+            --lavender: #e6e6fa;
+            --cream: #fffdd0;
+            --text-dark: #5a4b5e;
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent; /* Hilangkan kotak biru saat tap di HP */
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--pink) 0%, var(--lavender) 100%);
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-dark);
+            position: relative;
+            touch-action: manipulation; /* Optimasi touch di HP */
+        }
+
+        /* Music Button */
+        #music-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-size: 1.2rem;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Scene Container */
+        .scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease;
+            padding: 20px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .scene.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 20;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        /* Buttons */
+        .btn {
+            background: white;
+            color: #ff6b81;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(255, 107, 129, 0.3);
+            transition: transform 0.2s;
+            position: relative;
+            z-index: 50; /* Memastikan tombol selalu bisa diklik */
+        }
+        .btn:active { transform: scale(0.95); }
+
+        /* Typography - disesuaikan untuk HP */
+        h1 { font-family: 'Pacifico', cursive; font-size: 2.5rem; color: #ff6b81; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(255,255,255,0.7); }
+        h2 { font-size: 1.8rem; margin-bottom: 10px; }
+        p { font-size: 1.1rem; margin-bottom: 10px; font-weight: 600; }
+
+        /* Photo Styles */
+        .polaroid, .scrapbook, .cinematic {
+            background: white;
+            padding: 10px 10px 40px 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            margin-bottom: 15px;
+            width: 80%;
+            max-width: 280px;
+        }
+        
+        .polaroid { transform: rotate(-3deg); border-radius: 5px; }
+        
+        .scrapbook {
+            background: #fff9e6;
+            transform: rotate(2deg);
+            position: relative;
+        }
+        .scrapbook::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        .cinematic {
+            padding: 5px;
+            border: 3px solid white;
+            transform: none;
+            background: transparent;
+            box-shadow: 0 0 30px rgba(255,255,255,0.4);
+            z-index: 10;
+        }
+
+        .polaroid img, .scrapbook img, .cinematic img {
+            width: 100%;
+            height: auto;
+            max-height: 40vh; /* Agar foto tidak kepanjangan di HP */
+            object-fit: cover;
+            object-position: center;
+            border-radius: 3px;
+            display: block;
+        }
+
+        /* Cinematic Scene Background (Fix untuk bug yang nutupin tombol) */
+        .cinematic-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85);
+            z-index: 1; /* Ada di belakang teks & gambar */
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        .scene.active .cinematic-bg { opacity: 1; }
+        
+        /* Elemen di dalam scene 7 harus di atas background hitam */
+        #scene7 > *:not(.cinematic-bg) {
+            position: relative;
+            z-index: 5;
+        }
+        .cinematic-text { color: white; text-shadow: 0 2px 5px black; }
+
+        /* Collage Ending */
+        .collage {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 90%;
+            max-width: 320px;
+        }
+        .collage img {
+            width: 100%;
+            aspect-ratio: 1/1; /* Dibuat kotak supaya rapi */
+            object-fit: cover;
+            border-radius: 10px;
+            border: 3px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Clean Animations Triggered ONLY when scene is active */
+        .fade-in, .slide-up, .pop-in { opacity: 0; }
+        
+        .scene.active .fade-in { animation: fadeIn 1s forwards; }
+        .scene.active .slide-up { animation: slideUp 0.8s forwards; }
+        .scene.active .pop-in { animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        .delay-1 { animation-delay: 1s !important; }
+        .delay-2 { animation-delay: 2.5s !important; }
+        .delay-3 { animation-delay: 4s !important; }
+        .delay-4 { animation-delay: 5.5s !important; }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes slideUp { 
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); } 
+        }
+        @keyframes popIn { 
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); } 
+        }
+        
+        /* Typing effect update */
+        .typing-effect {
+            border-right: 2px solid var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            margin: 0 auto;
+            width: 0;
+            color: #ff6b81;
+        }
+        .scene.active .typing-effect {
+            animation: typing 1.5s steps(20, end) forwards;
+            animation-delay: 1s; /* Sesuai dengan delay-1 */
+        }
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        /* Slider */
+        .slider-container { width: 100%; margin: 20px 0; }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 12px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ff6b81;
+            box-shadow: 0 0 10px rgba(255, 107, 129, 0.5);
+        }
+
+        #praise-display {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #ff6b81;
+            text-align: center;
+        }
+
+        /* Floating Hearts & Confetti */
+        .floating-heart { position: absolute; bottom: -20px; animation: floatUp linear infinite; z-index: 1; opacity: 0.6; }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+        .sparkle { position: absolute; font-size: 1.2rem; animation: sparkleAnim 1.5s infinite alternate; z-index: 5; }
+        @keyframes sparkleAnim { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.2); opacity: 1; } }
+        
+        .confetti { position: absolute; width: 10px; height: 10px; z-index: 100; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <audio id="bgm" src="music.mp3" loop></audio>
+    <div id="music-btn" onclick="toggleMusic()">🎵</div>
+
+    <div class="scene active" id="scene1">
+        <h1 class="fade-in">HAI KAMU 👀</h1>
+        <p class="slide-up delay-1">iya, kamu.</p>
+        <p class="slide-up delay-2">boleh nanya sesuatu nggak?</p>
+        <button class="btn pop-in delay-3" onclick="startExperienceAndNext(2)">Apaan? 👀</button>
+    </div>
+
+    <div class="scene" id="scene2">
+        <p class="fade-in">Kenapa kamu...</p>
+        <h2 class="typing-effect">...lucu banget sih?</h2>
+        <p class="slide-up delay-2">Serius.</p>
+        <p class="slide-up delay-3">Ini tuh nggak adil 😭</p>
+        <button class="btn pop-in delay-4" onclick="nextScene(3)">Kenapa emang?</button>
+    </div>
+
+    <div class="scene" id="scene3">
+        <span class="sparkle" style="top: 25%; left: 15%;">✨</span>
+        <span class="sparkle" style="top: 20%; right: 20%; animation-delay: 0.5s">✨</span>
+        <span class="sparkle" style="bottom: 35%; left: 25%; animation-delay: 1s">✨</span>
+        
+        <h1 class="pop-in">LIHAT DEH 😭</h1>
+        <p class="slide-up delay-1">Ini orang...</p>
+        <p class="slide-up delay-2" style="font-size: 1.5rem; color: #ff6b81;">kok bisa cantik banget?</p>
+        <button class="btn fade-in delay-3" onclick="nextScene(4)">Masih belum percaya?</button>
+    </div>
+
+    <div class="scene" id="scene4">
+        <div class="polaroid pop-in">
+            <img src="e.png" alt="Foto Cantik 1">
+        </div>
+        <p class="slide-up delay-1">OH...</p>
+        <p class="slide-up delay-2">pantes.</p>
+        <p class="slide-up delay-3">ternyata emang secantik ini 😭</p>
+        <button class="btn fade-in delay-4" onclick="nextScene(5)">Next →</button>
+    </div>
+
+    <div class="scene" id="scene5">
+        <div class="polaroid pop-in" style="transform: rotate(3deg);">
+            <img src="r.png" alt="Foto Cantik 2">
+        </div>
+        <p class="fade-in delay-1">Sebentar...</p>
+        <p class="slide-up delay-2">Ini lucu...</p>
+        <p class="slide-up delay-3">atau aku yang terlalu gampang gemes? 😭</p>
+        <p class="slide-up delay-4" style="color: #ff6b81;">Kayaknya memang kamu yang kelewat lucu.</p>
+        <button class="btn pop-in delay-4" style="animation-delay: 6.5s !important;" onclick="nextScene(6)">Masih ada lagi →</button>
+    </div>
+
+    <div class="scene" id="scene6">
+        <div class="scrapbook pop-in">
+            <img src="l.png" alt="Foto Cantik 3">
+        </div>
+        <h2 class="slide-up delay-1" style="color: #ff4757;">STOP.</h2>
+        <p class="slide-up delay-2">Jangan cantik-cantik terus dong.</p>
+        <p class="slide-up delay-3">Orang lain jadi minder 😭</p>
+        <button class="btn fade-in delay-4" onclick="nextScene(7)">Foto terakhir →</button>
+    </div>
+
+    <div class="scene" id="scene7">
+        <div class="cinematic-bg"></div> 
+        
+        <div class="cinematic pop-in delay-1">
+            <img src="i.png" alt="Foto Cantik 4">
+        </div>
+        <h2 class="cinematic-text slide-up delay-2">OKAY.</h2>
+        <h2 class="cinematic-text slide-up delay-3">AKU MENYERAH.</h2>
+        <p class="cinematic-text slide-up delay-4">EMPAT FOTO DAN SEMUANYA CANTIK.</p>
+        <p class="cinematic-text slide-up delay-4" style="animation-delay: 7s !important;">Sebenernya kamu punya rahasia apa sih?</p>
+        
+        <button class="btn pop-in delay-4" style="animation-delay: 8s !important;" onclick="nextScene(8)">Aku mau tahu 🤨</button>
+    </div>
+
+    <div class="scene" id="scene8">
+        <div class="glass-card pop-in">
+            <h2>Klik tombol ini.</h2>
+            <button class="btn" style="width: 100%; margin-top: 10px;" onclick="generatePraise()">✨ PUJI AKU ✨</button>
+            <div id="praise-display"></div>
+            <button id="btn-lanjut-8" class="btn hidden" style="background: var(--pink); color: white;" onclick="nextScene(9)">Lanjut ah malu 🙈 →</button>
+        </div>
+    </div>
+
+    <div class="scene" id="scene9">
+        <div class="glass-card fade-in">
+            <p>Tes terakhir.</p>
+            <h2>Seberapa cantik kamu?</h2>
+            
+            <div class="slider-container">
+                <input type="range" id="beauty-slider" min="0" max="100" value="0">
+            </div>
+            
+            <h1 id="slider-value">0%</h1>
+            <p id="slider-msg" style="color: #ff4757; font-weight: 800; display: none;">ERROR.<br>Skala kecantikan tidak cukup.</p>
+            
+            <button id="btn-lanjut-9" class="btn hidden" onclick="nextScene(10)">Lihat Hasil Akhir ✨</button>
+        </div>
+    </div>
+
+    <div class="scene" id="scene10">
+        <div class="collage fade-in delay-1">
+            <img src="e.png" alt="Foto 1">
+            <img src="r.png" alt="Foto 2">
+            <img src="l.png" alt="Foto 3">
+            <img src="i.png" alt="Foto 4">
+        </div>
+        
+        <p class="slide-up delay-2">Jadi kesimpulannya...</p>
+        <div class="slide-up delay-3" style="font-size: 1rem; line-height: 1.5;">
+            lucu? <b>iya.</b><br>
+            cantik? <b>banget.</b><br>
+            gemes? <b>parah.</b><br>
+            bikin senyum sendiri? <b>...iya juga.</b>
+        </div>
+        
+        <h1 class="pop-in delay-4" style="font-size: 2.2rem; margin-top: 15px; animation-delay: 5s !important;">Pokoknya kamu lucu banget. 💗</h1>
+        <p class="fade-in delay-4" style="animation-delay: 6s !important;">Jangan lupa senyum hari ini :)</p>
+        
+        <button class="btn pop-in delay-4" style="animation-delay: 6.5s !important;" onclick="resetExperience()">🔄 Lihat lagi</button>
+    </div>
+
+    <script>
+        let musicPlaying = false;
+        const audio = document.getElementById('bgm');
+        let clickCount = 0;
+
+        // Memutar lagu
+        function toggleMusic() {
+            if (musicPlaying) {
+                audio.pause();
+                document.getElementById('music-btn').innerText = '🎵';
+            } else {
+                audio.play().catch(e => console.log("Audio play failed:", e));
+                document.getElementById('music-btn').innerText = '⏸️';
+            }
+            musicPlaying = !musicPlaying;
+        }
+
+        // Trigger scene pertama + lagu
+        function startExperienceAndNext(n) {
+            if(!musicPlaying) toggleMusic();
+            nextScene(n);
+        }
+
+        // Navigasi antar scene (Logika baru yang lebih bersih, anti ngebug/stuck)
+        function nextScene(n) {
+            // Sembunyikan semua scene
+            document.querySelectorAll('.scene').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Munculkan scene yang dituju
+            const next = document.getElementById(`scene${n}`);
+            if(next) {
+                next.classList.add('active');
+            }
+        }
+
+        // Random Praise (Scene 8)
+        const praises = [
+            "kok bisa sih secantik ini?", "gemes banget 😭", "senyumnya bahaya.",
+            "ini manusia apa karakter anime?", "cantik banget, serius.",
+            "lucu banget astaga.", "please, jangan terlalu menggemaskan.",
+            "oke, fix. favorit.", "100/10.", "nggak ada jeleknya.",
+            "yang bikin kamu begini siapa 😭", "kamera aja kalah.",
+            "ini definisi pretty privilege.", "kok makin dilihat makin lucu?",
+            "udah cantik, lucu lagi.", "stop bikin orang senyum-senyum sendiri."
+        ];
+
+        function generatePraise() {
+            clickCount++;
+            const display = document.getElementById('praise-display');
+            const random = praises[Math.floor(Math.random() * praises.length)];
+            
+            display.innerHTML = `<span style="animation: popIn 0.3s forwards">${random}</span>`;
+            
+            // Setelah klik 3 kali, tombol lanjut muncul
+            if(clickCount >= 3) {
+                document.getElementById('btn-lanjut-8').classList.remove('hidden');
+            }
+        }
+
+        // Slider interaksi (Scene 9)
+        const slider = document.getElementById('beauty-slider');
+        slider.addEventListener('input', function(e) {
+            const val = e.target.value;
+            const display = document.getElementById('slider-value');
+            const msg = document.getElementById('slider-msg');
+            const btn = document.getElementById('btn-lanjut-9');
+            
+            if(val < 100) {
+                display.innerText = val + '%';
+            } else {
+                display.innerText = '∞ / 10';
+                msg.style.display = 'block';
+                e.target.disabled = true; // Kunci slider
+                btn.classList.remove('hidden');
+                triggerConfetti();
+            }
+        });
+
+        // Efek Confetti (Kertas warna-warni jatuh)
+        function triggerConfetti() {
+            for(let i=0; i<40; i++) {
+                const colors = ['#ff6b81', '#ffb6c1', '#ffd1dc', '#fff', '#e6e6fa'];
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+
+        // Hati melayang di background (diatur agar tidak bikin berat hp)
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💗';
+            heart.classList.add('floating-heart');
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            heart.style.fontSize = (Math.random() * 1 + 0.5) + 'rem';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 8000);
+        }
+        setInterval(createHeart, 1500);
+
+        // Ulang dari awal
+        function resetExperience() {
+            clickCount = 0;
+            document.getElementById('praise-display').innerHTML = '';
+            document.getElementById('btn-lanjut-8').classList.add('hidden');
+            document.getElementById('btn-lanjut-9').classList.add('hidden');
+            
+            const slider = document.getElementById('beauty-slider');
+            slider.value = 0;
+            slider.disabled = false;
+            
+            document.getElementById('slider-value').innerText = '0%';
+            document.getElementById('slider-msg').style.display = 'none';
+
+            nextScene(1);
+        }
+    </script>
+</body>
+</html>
