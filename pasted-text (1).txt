@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cinta Murni di Balik Es ❄️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Pacifico&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink: #ff6b9d;
+            --soft-pink: #ffe4ec;
+            --ice: #a2d5f2;
+            --dark: #1b1b2f;
+            --cream: #fff8f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(180deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 12, 41, 0.92);
+            backdrop-filter: blur(12px);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .header h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.35rem;
+            color: #ffb6c1;
+            letter-spacing: 0.5px;
+        }
+
+        .music-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            border: 1.5px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .music-btn:active { transform: scale(0.92); }
+
+        /* Comic Container */
+        .comic-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
+
+        /* Panel */
+        .panel {
+            position: relative;
+            margin: 0 12px 28px;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+            background: #1a1a2e;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .panel.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .panel-img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        /* Caption / Narration */
+        .narration {
+            background: linear-gradient(135deg, #2b2b45, #1b1b2f);
+            padding: 18px 20px;
+            font-size: 0.95rem;
+            color: #e0e0ff;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            font-style: italic;
+        }
+
+        /* Speech Bubble */
+        .bubble {
+            position: absolute;
+            background: white;
+            color: #222;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            max-width: 75%;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+            line-height: 1.35;
+        }
+        .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+        }
+        .bubble.left {
+            left: 16px;
+            bottom: 70px;
+        }
+        .bubble.left::after {
+            left: 22px;
+            border-top-color: white;
+            border-bottom: 0;
+        }
+        .bubble.right {
+            right: 16px;
+            bottom: 70px;
+        }
+        .bubble.right::after {
+            right: 22px;
+            border-top-color: white;
+    
+... 
